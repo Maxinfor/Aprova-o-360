@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Clínica</title>
+
+<style>
+body{
+margin:0;
+font-family:system-ui;
+background:#f4f6fb;
+}
+
+/* LAYOUT */
+.container{display:flex;}
+
+/* SIDEBAR */
+.sidebar{
+width:240px;
+background:#0b1320;
+color:#fff;
+min-height:100vh;
+padding:20px;
+}
+
+.sidebar h2{
+font-size:18px;
+margin-bottom:20px;
+}
+
+.menu{
+display:flex;
+flex-direction:column;
+gap:10px;
+font-size:14px;
+opacity:.9;
+}
+
+/* MAIN */
+.main{
+flex:1;
+padding:25px;
+}
+
+/* HEADER */
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.title{
+font-size:22px;
+font-weight:700;
+}
+
+.stats{
+display:flex;
+gap:10px;
+}
+
+.card-stat{
+background:#fff;
+padding:10px 14px;
+border-radius:10px;
+box-shadow:0 4px 12px rgba(0,0,0,.05);
+font-size:13px;
+}
+
+/* FORM */
+.form{
+background:#fff;
+padding:16px;
+border-radius:14px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+input,select{
+padding:10px;
+border:1px solid #e5e7eb;
+border-radius:10px;
+outline:none;
+}
+
+.full{grid-column:span 3;}
+
+.btn{
+background:#2563eb;
+color:#fff;
+border:none;
+padding:10px;
+border-radius:10px;
+cursor:pointer;
+font-weight:600;
+}
+
+/* SEARCH */
+.search{
+margin:15px 0;
+padding:10px;
+width:100%;
+border-radius:10px;
+border:1px solid #ddd;
+}
+
+/* LISTA */
+#lista{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+/* CARD PACIENTE */
+.item{
+background:#fff;
+padding:15px;
+border-radius:14px;
+box-shadow:0 6px 18px rgba(0,0,0,.06);
+border-left:5px solid #3b82f6;
+}
+
+.item.finalizado{border-left-color:#16a34a;}
+.item.faltou{border-left-color:#f97316;}
+
+.nome{
+font-size:16px;
+font-weight:700;
+color:#1d4ed8;
+}
+
+.info{
+font-size:13px;
+color:#444;
+margin-top:5px;
+}
+
+/* STATUS */
+.status{
+font-size:12px;
+margin-top:5px;
+font-weight:600;
+}
+
+/* BOTÕES */
+.actions{
+margin-top:10px;
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+}
+
+.btn-action{
+border:none;
+padding:6px 10px;
+border-radius:8px;
+font-size:11px;
+cursor:pointer;
+color:#fff;
+}
+
+.finalizar{background:#16a34a;}
+.faltou{background:#f97316;}
+.excluir{background:#ef4444;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+<h2>🏥 Clínica</h2>
+
+<div class="menu">
+<span>📋 Atendimento</span>
+<span>👨‍⚕️ Pacientes</span>
+<span>📅 Agenda</span>
+</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="topbar">
+<div class="title">Painel de Atendimento</div>
+
+<div class="stats">
+<div class="card-stat">Pendentes: <span id="pendentes">0</span></div>
+<div class="card-stat">Finalizados: <span id="finalizados">0</span></div>
+<div class="card-stat">Faltas: <span id="faltas">0</span></div>
+</div>
+</div>
+
+<!-- FORM -->
+<div class="form">
+
+<input id="crianca" placeholder="Nome do Paciente" oninput="capitalizar(this)">
+<input id="responsavel" placeholder="Responsável">
+<input id="telefone" placeholder="Telefone">
+
+<input id="data" type="date">
+<input id="hora" type="time">
+<input id="motivo" placeholder="Motivo da Consulta">
+
+<select id="conselheiro" class="full">
+<option>Cláudia</option>
+<option>Lucinea</option>
+<option>Nadelço</option>
+<option>Samara</option>
+<option>Sandra</option>
+</select>
+
+<button class="btn full" onclick="salvar()">Cadastrar Atendimento</button>
+
+</div>
+
+<input class="search" id="busca" placeholder="🔍 Buscar paciente..." oninput="render()">
+
+<div id="lista"></div>
+
+</div>
+</div>
+
+<script>
+
+let agenda = JSON.parse(localStorage.getItem("agenda")) || [];
+
+function salvar(){
+
+agenda.push({
+id: Date.now(),
+crianca: crianca.value,
+responsavel: responsavel.value,
+telefone: telefone.value,
+data: data.value,
+hora: hora.value,
+motivo: motivo.value,
+conselheiro: conselheiro.value,
+status: "pendente"
+});
+
+save();
+limpar();
+render();
+}
+
+function save(){
+localStorage.setItem("agenda", JSON.stringify(agenda));
+}
+
+function limpar(){
+crianca.value="";
+responsavel.value="";
+telefone.value="";
+data.value="";
+hora.value="";
+motivo.value="";
+}
+
+function capitalizar(el){
+el.value = el.value
+.split(" ")
+.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+.join(" ");
+}
+
+function mudarStatus(id, status){
+agenda = agenda.map(i =>
+i.id === id ? {...i, status} : i
+);
+save();
+render();
+}
+
+function excluir(id){
+agenda = agenda.filter(i => i.id !== id);
+save();
+render();
+}
+
+function render(){
+
+const filtro = busca.value?.toLowerCase() || "";
+
+lista.innerHTML = "";
+
+let pend = 0, fin = 0, fal = 0;
+
+agenda
+.filter(i => i.crianca.toLowerCase().includes(filtro))
+.forEach(i => {
+
+if(i.status === "pendente") pend++;
+if(i.status === "finalizado") fin++;
+if(i.status === "faltou") fal++;
+
+lista.innerHTML += `
+<div class="item ${i.status}">
+
+<div class="nome">${i.crianca}</div>
+
+<div class="info">👤 ${i.responsavel} | 📞 ${i.telefone}</div>
+<div class="info">📅 ${i.data} ⏰ ${i.hora}</div>
+<div class="info">📌 ${i.motivo}</div>
+<div class="info">👨‍⚕️ ${i.conselheiro}</div>
+
+<div class="status">Status: ${i.status}</div>
+
+<div class="actions">
+
+<button class="btn-action finalizar" onclick="mudarStatus(${i.id},'finalizado')">Finalizar</button>
+<button class="btn-action faltou" onclick="mudarStatus(${i.id},'faltou')">Falta</button>
+<button class="btn-action excluir" onclick="excluir(${i.id})">Excluir</button>
+
+</div>
+
+</div>
+`;
+});
+
+pendentes.innerText = pend;
+finalizados.innerText = fin;
+faltas.innerText = fal;
+}
+
+render();
+
+</script>
+
+</body>
+</html>
