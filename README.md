@@ -1,1 +1,65 @@
-# Aprova-o-360
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APROVAÇÃO 360</title>
+
+<style>
+:root {
+    --bg-main: #060814;
+    --bg-sidebar: #0b0f19;
+    --bg-card: #13192b;
+    --bg-input: #090d16;
+    --border-color: #222f47;
+    --border-glow: #2f4366;
+    --text-main: #f1f5f9;
+    --text-muted: #64748b;
+    --primary: #3b82f6;
+    --primary-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    --primary-hover: #60a5fa;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #f43f5e;
+    --accent-amber: #f59e0b;
+}
+
+*{ box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+
+body {
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    letter-spacing: -0.01em;
+}
+
+/* SIDEBAR REFORMULADA PARA RESPONSIVIDADE */
+.left {
+    width: 310px;
+    min-width: 310px;
+    background: var(--bg-sidebar);
+    padding: 26px;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.left h3 { 
+    color: #fff; 
+    margin: 0; 
+    font-size: 1.4rem; 
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-title { 
+    font-size: 0.7rem; 
+    text-transform: uppercase; 
+    color: var(--text-muted);
